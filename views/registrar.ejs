@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Registrar</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body style="background-color: gray;">
+      <!-- REGISTRATION -->
+  <section class="container">
+    <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-10 mx-auto">
+              <div class="card card-signin my-5">
+                <div class="card-body">
+                  <h5 class="card-title text-center">Registrar</h5>
+
+                  <%- include('./partials/erroMsg') %>
+
+                  <form class="form-signin" method="POST" action="/registrar">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="emailRegister">E-mail</label>
+                          <input type="email" name="email" class="form-control" maxlength="50" id="emailRegister" placeholder="Email" required autofocus>
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="passwordRegister">Senha</label>
+                          <input type="password" name="senha" maxlength="15" class="form-control" id="passwordRegister" placeholder="Senha" required>
+                          <span toggle="#passwordRegister" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="nomeRegister">Nome</label>
+                      <input type="text" name="nome" maxlength="45" class="form-control"  id="nomeRegister" placeholder="Nome" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="cpfCpnjRegiter">CPF</label>
+                          <input type="text" name="CPF" class="form-control mascara-cpfcnpj" id="cpfCpnjRegiter" placeholder="Cpf" required>
+                        </div>
+  
+                        <div class="form-group col-md-6">
+                          <label for="cellRegister">Celular</label>
+                          <input type="text" class="form-control" maxlength="20" name="telefone" placeholder="Telefone" id="cellRegister" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="cepRegister">CEP</label>
+                          <input type="text" class="form-control" max="8" placeholder="Cep" id="cepRegister">
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="cidadeRegister">Cidade</label>
+                          <input type="text" name="cidade" maxlength="45" class="form-control" placeholder="Cidade" id="cidadeRegister" value="" required>
+                        </div>
+                    </div>
+                      <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="ruaRegister">Rua</label>
+                          <input type="text" class="form-control" name="rua" maxlength="45" id="ruaRegister" placeholder="Rua" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="nCasaRegister">Número</label>
+                          <input type="text" name="numero" class="form-control" placeholder="Número" id="nCasaRegister">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                          <div class="form-group col-md-6">
+                              <label for="bairroRegister">Bairro</label>
+                              <input type="text" class="form-control" name="bairro" maxlength="45" placeholder="Bairro" id="bairroRegister">
+                          </div>
+    
+                          <div class="form-group col-md-6">
+                              <label for="estadoRegister">Estado</label>
+                              <input type="text" class="form-control" id="estadoRegister" placeholder="Estado" readonly>
+                          </div>
+                      </div>
+
+                      <button type="submit" class="btn btn-lg btn-block btn-primary">Registrar</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+</section>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!--Importando Script Jquery-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <!-- Find CEP -->
+    <script>
+      $("#cepRegister").focusout(function(){
+          //Início do Comando AJAX
+          $.ajax({
+              //O campo URL diz o caminho de onde virá os dados
+              //É importante concatenar o valor digitado no CEP
+              url: 'https://viacep.com.br/ws/'+$(this).val()+'/json/unicode/',
+              //Aqui você deve preencher o tipo de dados que será lido,
+              //no caso, estamos lendo JSON.
+              dataType: 'json',
+              //SUCESS é referente a função que será executada caso
+              //ele consiga ler a fonte de dados com sucesso.
+              //O parâmetro dentro da função se refere ao nome da variável
+              //que você vai dar para ler esse objeto.
+              success: function(resposta){
+                  //Agora basta definir os valores que você deseja preencher
+                  //automaticamente nos campos acima.
+                  $("#ruaRegister").val(resposta.logradouro);
+                  $("#bairroRegister").val(resposta.bairro);
+                  $("#cidadeRegister").val(resposta.localidade);
+                  $("#estadoRegister").val(resposta.uf);
+                  //Vamos incluir para que o Número seja focado automaticamente
+                  //melhorando a experiência do usuário
+                  $("#nCasaRegister").focus();
+              }
+          });
+      });
+    </script>
+    
+    <!-- JQueryMask -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+
+    <!-- Mask CPF CNPJ Script -->
+    <script>
+          var cpfMascara = function (val) {
+            return val.replace(/\D/g, '').length > 11 ? '000.000.000-00' : '000.000.000-00';
+          },
+          cpfOptions = {
+            onKeyPress: function(val, e, field, options) {
+                field.mask(cpfMascara.apply({}, arguments), options);
+            }
+          };
+
+          $('.mascara-cpfcnpj').mask(cpfMascara, cpfOptions);
+    </script>
+</body>
+</html>
