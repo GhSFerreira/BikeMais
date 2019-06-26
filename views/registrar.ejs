@@ -44,7 +44,20 @@
   
                         <div class="form-group col-md-6">
                           <label for="cellRegister">Celular</label>
-                          <input type="text" class="form-control" maxlength="20" name="telefone" placeholder="Telefone" id="cellRegister" required>
+                          <input type="tel" class="form-control"  name="telefone" placeholder="Telefone" id="cellRegister" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="cartaoCredito">Carta de Crédito</label>
+                          <input type="text" name="cartaoDeCredito" class="form-control" id="cartaoCredito" placeholder="Cartao" required>
+                        </div>
+  
+                        <div class="form-group col-md-6">
+                          <label for="selectPlano">Plano </label>
+                            <select class="custom-select" name="plano" id="selectPlano">
+                              <%- include('./partials/nomePlanos') %>
+                            </select>
                         </div>
                     </div>
                     <div class="form-row">
@@ -142,5 +155,26 @@
 
           $('.mascara-cpfcnpj').mask(cpfMascara, cpfOptions);
     </script>
+
+    <!-- Mascara CARTAO DE CREADITO -->
+    <script>
+      $('#cartaoCredito').mask('0000 0000 0000 0000');
+    </script>
+
+    <!-- Mascara CEP -->
+    <script>
+      $('#cepRegister').mask('00000-000');
+    </script>
+
+    <!-- Mascara numCasa -->
+    <script>
+      $('#nCasaRegister').mask('0000');
+    </script>
+
+    <!-- Mascara telefone -->
+    <script>
+      $('#cellRegister').mask('(00) 0000-0000')
+    </script>
+
 </body>
 </html>

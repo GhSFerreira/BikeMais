@@ -6,8 +6,21 @@ var erros = [];
 
 /* --------Renderiza a Pagina - /registrar ---*/
 router.get('/', (req, res, next) => {
-    res.render('registrar', {
-        erros
+
+    let planoID = [];
+
+    db.connection.query('SELECT nomePlano, idPlano FROM plano', (err, results, fields) => {
+        if (err) {
+            console.log(err);
+        } else {
+            results.forEach((element) => {
+                planoID.push(element);
+            })
+            res.render('registrar', {
+                erros,
+                nPlanos: planoID
+            });
+        }
     });
 
     //Limpa Vetor de Mensagens
@@ -31,17 +44,11 @@ router.post('/', (req, res, next) => {
             erros.push({msg:'Erro ao Cadastrar'});
             res.redirect('/registrar')
         }else{
-            console.log('Usuario Cadastrado!')
-            db.connection.query('SELECT LAST_INSERT_ID() as user_id', function(err, results, fields) {
-                if(err){
-                    console.log(err);
-                }else{
-                    let user_id = results[0];
-                    req.login(user_id, function (err) {
-                        res.redirect('/painel');
-                    });
-                }
-            });
+            console.log('Usuario Cadastrado!');
+            req.session.loggedin = true;
+            req.session.username = dataUser.nome;
+            req.session.cpf = dataUser.CPF;
+            res.redirect('/painel');
         }
         //response.json(results);
         console.log('Query executada');

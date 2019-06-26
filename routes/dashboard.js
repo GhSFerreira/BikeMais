@@ -10,10 +10,12 @@ var nomeEstacoes;
 /* --------Rota Inicial - /painel ------------*/
 router.get('/', (req, res, next) => {
     if(req.session.loggedin){
-        let userId = req.session.cpf;
+
+        let userId = req.session.cpf;       // Id do Usuario
         let aluguelBike = 0;
         let numBikesAlugadas = 0;
         let precoPlano = 0;
+        let nPlano = '';
         /* Zera Historico */
         historicoAluguelBikes = [];
 
@@ -42,7 +44,7 @@ router.get('/', (req, res, next) => {
             }
         });
 
-        /* -------- Preco Plano ---------------*/
+        /* --------Query Preco Plano ---------------*/
         db.connection.query('SELECT preco FROM usuario , plano WHERE usuario.CPF=? AND plano.idPlano=usuario.plano', userId,
         (err, results, fields) => {
             if(err){
@@ -50,9 +52,19 @@ router.get('/', (req, res, next) => {
                 console.log(err);
             }else{
                 precoPlano = results[0].preco;
-                console.log(results);
             }
-        })
+        });
+
+        /* --------Query nome do plano do Cliente------ */
+        db.connection.query('SELECT nomePlano FROM plano, usuario WHERE usuario.CPF=? AND plano.idPlano=usuario.plano', userId,
+        (err, results, fields) => {
+            if (err) {
+                console.log('----ERRO AO BUSCAR NOME DO PLANO DO CLIENTE------');
+                console.log(err);
+            } else {
+                nPlano = results[0].nomePlano;
+            }   
+        });
 
         /*-----------Query Historico------- */
         db.connection.query('SELECT idBike, dataHoraAluguel, dataHoraDevolucao FROM alugabike WHERE cpfAtual=?', userId ,(err, results, fields) => {
@@ -66,6 +78,7 @@ router.get('/', (req, res, next) => {
                         historicoAluguelBikes.push(element);
                     });
                 }
+                /* -----------Query Procura nome das Estacoes---------- */
                 db.connection.query('SELECT nomeEstacao FROM estacao',(err, results, fields) => {
                     if(err){
                         console.log(err);
@@ -73,7 +86,6 @@ router.get('/', (req, res, next) => {
                         results.forEach(element => {
                             nomeEstacoes.push(element);
                         });
-                        console.log(nomeEstacoes);
                
                         res.render('painel', {
                             userName: 'Olá, ' + req.session.username,
@@ -81,7 +93,8 @@ router.get('/', (req, res, next) => {
                             nEstacao: nomeEstacoes,
                             bikeAlugada: aluguelBike,
                             numBikesAlugadas: numBikesAlugadas,
-                            precoPlano: 'R$ '+ precoPlano+',00'
+                            precoPlano: 'R$ '+ precoPlano+',00',
+                            nomePlano: nPlano
                         });
                     }
                 });
@@ -96,9 +109,29 @@ router.get('/', (req, res, next) => {
 
 /* ------- Altera Config do Usuário -----------*/
 router.get('/config', (req, res, next) => {
-    res.render('painelConfig', {
-        userName: 'Olá, ' + req.session.username
-    });
+    let userId = req.session.cpf;
+    let nomePlanos = [];
+    if(userId){
+
+        db.connection.query('SELECT nomePlano, idPlano FROM plano', (err, results, fields) => {
+            if (err) {
+                console.log(err);
+            } else {
+                results.forEach((element) => {
+                    nomePlanos.push(element);
+                    console.log(element)
+                })
+                res.render('painelConfig', {
+                    userName: 'Olá, ' + req.session.username,
+                    nPlanos: nomePlanos
+                });
+            }
+        });
+
+    }else{
+        res.sendStatus(401);
+    }
+
 });
 
 /*--------Procura Bikes Disponiveis------------*/
@@ -209,7 +242,7 @@ router.post('/alugarbike', (req, res, next) => {
                             let date = new Date();
                             let horaDeAluguel = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
                             console.log('HORA ALUGUEL: '+ horaDeAluguel);
-                            db.connection.query('INSERT INTO alugabike SET idBike=?, dataHoraAluguel=?, alugado=1, cpfAtual=?', [idBicicleta, horaDeAluguel, cpfID],
+                            db.connection.query('INSERT INTO alugabike SET idBike=?, dataHoraAluguel=?, cpfAtual=?', [idBicicleta, horaDeAluguel, cpfID],
                             function (err, results, fiels) {
                                 if (err) {
                                     console.log('-----------Falha ao Alugar Bicicleta - Inserir aluguel------------');
@@ -277,6 +310,28 @@ router.post('/devolverbike', (req, res, next) => {
         });
     }else{
         res.sendStatus(401);
+    }
+
+});
+
+/*----------------Alterar Plano----------------- */
+router.post('/alterarplano', (req, res, next) => {
+    let userId = req.session.cpf;
+    let planoID = req.body.plano;
+
+    if(userId && planoID){
+        db.connection.query('update usuario set plano=? where CPF=?', [planoID,userId],
+        (err, results, fields) => {
+            if(err){
+                console.log(err);
+                res.sendStatus(500);
+            }else{
+                res.send({msgPlano: 'Atualizado com Êxito!'});
+            }
+        });
+
+    }else{
+        res.send({msgPlano: 'Não foi possível alterar!'});
     }
 
 });
