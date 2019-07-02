@@ -15,11 +15,11 @@ router.get('/', (req, res, next) => {
         } else {
             results.forEach((element) => {
                 planoID.push(element);
-            })
-            res.render('registrar', {
-                erros,
-                nPlanos: planoID
             });
+        res.render('registrar', {
+            erros: erros,
+            nPlanos: planoID
+        });
         }
     });
 
@@ -37,7 +37,8 @@ router.post('/', (req, res, next) => {
         if(err){           
             if(err.code == "ER_DUP_ENTRY"){
                 console.log('Usuário já cadastrado!');
-                erros.push({msg: 'Usuário já cadastrado'});
+                erros.push({msg:'Usuário já cadastrado'});
+                console.log(erros);
             }else{
                 console.log(err);
             }
